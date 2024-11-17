@@ -3,15 +3,17 @@ package com.example.voteTopic.service;
 import com.example.voteTopic.dto.VoteSessionDTO;
 import com.example.voteTopic.exception.InvalidEndVoteDateTime;
 import com.example.voteTopic.exception.InvalidTopicException;
-import com.example.voteTopic.model.Topic;
 import com.example.voteTopic.model.VoteSession;
 import com.example.voteTopic.repository.VoteSessionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class VoteSessionService {
@@ -21,6 +23,11 @@ public class VoteSessionService {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
+
+    private Logger logger = LoggerFactory.getLogger(VoteSessionService.class);
 
     public void openVoteSession(VoteSessionDTO voteSessionDTO) throws InvalidTopicException, InvalidEndVoteDateTime {
         if(hasValidTopicId(voteSessionDTO)){
@@ -52,6 +59,21 @@ public class VoteSessionService {
 
         if(Objects.nonNull(endVoteDateTime) && endVoteDateTime.isBefore(now)){
             throw new InvalidEndVoteDateTime();
+        }
+
+        configureTimerToNotify(now, endVoteDateTime);
+    }
+
+    private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime) {
+        Duration waitTime = Duration.between(now, endVoteDateTime);
+
+        try {
+            new Thread(() -> {
+                //TODO count votes
+                rabbitMQProducer.sendMessage("Votes: 1");
+            }).wait(waitTime.toMillis());
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
         }
     }
 
