@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TopicService {
@@ -20,6 +21,10 @@ public class TopicService {
         topicRepository.save(taskToSave);
     }
 
+    public void saveOrUpdateTopic(Topic topic){
+        topicRepository.save(topic);
+    }
+
     public List<TopicDTO> findAllTopics(){
         List<Topic> allTopics = topicRepository.findAll();
         List<TopicDTO> allTopicDTOs = new ArrayList<>();
@@ -29,5 +34,9 @@ public class TopicService {
         });
 
         return allTopicDTOs;
+    }
+
+    public Optional<Topic> findTopicById(Long topicId){
+        return topicRepository.findById(topicId);
     }
 }

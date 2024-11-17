@@ -1,5 +1,6 @@
 package com.example.voteTopic.model;
 
+import com.example.voteTopic.dto.VoteSessionDTO;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class VoteSession {
     @Column(name = "end_vote_date_time", nullable = false)
     private LocalDateTime endVoteDateTime;
 
-    @OneToOne
+    @OneToOne(mappedBy = "voteSession")
     private Topic topic;
 
     @OneToMany(mappedBy="voteSession")
@@ -58,5 +59,20 @@ public class VoteSession {
 
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public static VoteSessionDTO toDTO(VoteSession voteSession){
+        VoteSessionDTO voteSessionDTO = new VoteSessionDTO();
+
+        voteSessionDTO.setId(voteSession.getId());
+        voteSessionDTO.setStartVoteDateTime(voteSession.getStartVoteDateTime());
+        voteSessionDTO.setEndVoteDateTime(voteSession.getEndVoteDateTime());
+        voteSessionDTO.setTopic(voteSession.getTopic());
+
+        return voteSessionDTO;
     }
 }
