@@ -1,6 +1,6 @@
 package com.example.voteTopic.model;
 
-import com.example.voteTopic.TopicDTO;
+import com.example.voteTopic.dto.TopicDTO;
 import jakarta.persistence.*;
 
 @Entity

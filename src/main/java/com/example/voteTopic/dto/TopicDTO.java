@@ -1,4 +1,4 @@
-package com.example.voteTopic;
+package com.example.voteTopic.dto;
 
 import com.example.voteTopic.model.Topic;
 import com.example.voteTopic.model.VoteSession;
