@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AssociateSevice {
@@ -17,6 +18,10 @@ public class AssociateSevice {
 
     public void createAssociate(AssociateDTO associateDTO){
         associateRepository.save(AssociateDTO.toEntity(associateDTO));
+    }
+
+    public Optional<Associate> findById(Long id){
+        return associateRepository.findById(id);
     }
 
     public List<AssociateDTO> findAllAssociates(){

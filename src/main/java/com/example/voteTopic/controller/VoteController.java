@@ -2,6 +2,7 @@ package com.example.voteTopic.controller;
 
 import com.example.voteTopic.dto.VoteDTO;
 import com.example.voteTopic.exception.ClosedVoteSessionException;
+import com.example.voteTopic.exception.InvalidAssociateException;
 import com.example.voteTopic.exception.VoteSessionNotPresentException;
 import com.example.voteTopic.service.VoteService;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class VoteController {
         } catch (ClosedVoteSessionException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         } catch (VoteSessionNotPresentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
+        } catch (InvalidAssociateException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         }
         return new ResponseEntity<>(voteDTO, HttpStatus.OK);

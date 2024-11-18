@@ -2,7 +2,9 @@ package com.example.voteTopic.service;
 
 import com.example.voteTopic.dto.VoteDTO;
 import com.example.voteTopic.exception.ClosedVoteSessionException;
+import com.example.voteTopic.exception.InvalidAssociateException;
 import com.example.voteTopic.exception.VoteSessionNotPresentException;
+import com.example.voteTopic.model.Associate;
 import com.example.voteTopic.model.Vote;
 import com.example.voteTopic.model.VoteSession;
 import com.example.voteTopic.repository.VoteRepository;
@@ -22,7 +24,10 @@ public class VoteService {
     @Autowired
     private VoteSessionService voteSessionService;
 
-    public void createVote(VoteDTO voteDTO) throws ClosedVoteSessionException, VoteSessionNotPresentException {
+    @Autowired
+    private AssociateSevice associateSevice;
+
+    public void createVote(VoteDTO voteDTO) throws ClosedVoteSessionException, VoteSessionNotPresentException, InvalidAssociateException {
         voteDTO.setVoteDate(LocalDateTime.now());
 
         Optional<VoteSession> voteSessionOptional = voteSessionService.findById(voteDTO.getVoteSession().getId());
@@ -31,7 +36,16 @@ public class VoteService {
             VoteSession voteSession = voteSessionOptional.get();
 
             if(voteSession.getEndVoteDateTime().isAfter(LocalDateTime.now())){
-                voteRepository.save(VoteDTO.toEntity(voteDTO));
+
+                Vote vote = VoteDTO.toEntity(voteDTO);
+                Optional<Associate> associateOptional = associateSevice.findById(voteDTO.getAssociate().getId());
+
+                if(associateOptional.isPresent()){
+                    vote.setAssociate(associateOptional.get());
+                    voteRepository.save(vote);
+                } else {
+                    throw new InvalidAssociateException();
+                }
             }else{
                 throw new ClosedVoteSessionException();
             }
