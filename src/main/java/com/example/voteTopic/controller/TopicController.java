@@ -2,7 +2,7 @@ package com.example.voteTopic.controller;
 
 import com.example.voteTopic.dto.TopicDTO;
 import com.example.voteTopic.dto.VoteSessionDTO;
-import com.example.voteTopic.exception.InvalidEndVoteDateTime;
+import com.example.voteTopic.exception.InvalidEndVoteDateTimeException;
 import com.example.voteTopic.exception.InvalidTopicException;
 import com.example.voteTopic.service.TopicService;
 import com.example.voteTopic.service.VoteSessionService;
@@ -41,7 +41,7 @@ public class TopicController {
             voteSessionService.openVoteSession(voteSessionDTO);
         } catch (InvalidTopicException e) {
             return new ResponseEntity<>(voteSessionDTO, HttpStatus.PRECONDITION_FAILED);
-        } catch (InvalidEndVoteDateTime e) {
+        } catch (InvalidEndVoteDateTimeException e) {
             return new ResponseEntity<>(voteSessionDTO, HttpStatus.PRECONDITION_FAILED);
         }
 
