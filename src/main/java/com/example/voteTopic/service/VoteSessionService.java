@@ -58,7 +58,7 @@ public class VoteSessionService {
             throw new InvalidEndVoteDateTime();
         }
 
-        //configureTimerToNotify(now, endVoteDateTime);
+        configureTimerToNotify(now, endVoteDateTime);
     }
 
     private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime) {
