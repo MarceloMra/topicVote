@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,9 +34,9 @@ public class VoteSessionService {
     public void openVoteSession(VoteSessionDTO voteSessionDTO) throws InvalidTopicException, InvalidEndVoteDateTime {
         if(hasValidTopicId(voteSessionDTO)){
 
-            initializeVoteSessionDate(voteSessionDTO);
-
             VoteSession voteSession = VoteSessionDTO.toEntity(voteSessionDTO);
+
+            initializeVoteSessionDate(voteSessionDTO, voteSession);
 
             voteSession.setTopic(topicService.findTopicById(voteSessionDTO.getTopic().getId()).get());
             voteSessionRepository.save(voteSession);
@@ -45,7 +46,7 @@ public class VoteSessionService {
         }
     }
 
-    private void initializeVoteSessionDate(VoteSessionDTO voteSessionDTO) throws InvalidEndVoteDateTime {
+    private void initializeVoteSessionDate(VoteSessionDTO voteSessionDTO, VoteSession voteSession) throws InvalidEndVoteDateTime {
         LocalDateTime now = LocalDateTime.now();
 
         voteSessionDTO.setStartVoteDateTime(now);
@@ -59,15 +60,21 @@ public class VoteSessionService {
             throw new InvalidEndVoteDateTime();
         }
 
-        configureTimerToNotify(now, voteSessionDTO.getEndVoteDateTime());
+        configureTimerToNotify(now, voteSessionDTO.getEndVoteDateTime(), voteSession);
     }
 
-    private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime) {
+    private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime, final VoteSession voteSession) {
         Duration waitTime = Duration.between(now, endVoteDateTime);
         TimerTask task = new TimerTask() {
             public void run() {
-                //TODO count votes
-                rabbitMQProducer.sendMessage("Votes: 1");
+                int votesCount = 0;
+                Optional<VoteSession> voteSessionSearch = voteSessionRepository.findById(voteSession.getId());
+
+                if(voteSessionSearch.isPresent()){
+                    votesCount = voteSessionSearch.get().getVotes().size();
+                }
+
+                rabbitMQProducer.sendMessage("Votes: "+votesCount);
             }
         };
         Timer timer = new Timer("Timer");
