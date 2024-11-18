@@ -36,11 +36,8 @@ public class VoteSessionService {
 
             VoteSession voteSession = VoteSessionDTO.toEntity(voteSessionDTO);
 
-//            voteSessionDTO.getTopic().setVoteSession(voteSession);
-
             voteSession.setTopic(topicService.findTopicById(voteSessionDTO.getTopic().getId()).get());
             voteSessionRepository.save(voteSession);
-//            topicService.saveOrUpdateTopic(voteSession.getTopic());
 
         } else {
             throw new InvalidTopicException();
@@ -61,7 +58,7 @@ public class VoteSessionService {
             throw new InvalidEndVoteDateTime();
         }
 
-        configureTimerToNotify(now, endVoteDateTime);
+        //configureTimerToNotify(now, endVoteDateTime);
     }
 
     private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime) {

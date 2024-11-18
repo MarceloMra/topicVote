@@ -2,10 +2,13 @@ package com.example.voteTopic.dto;
 
 import com.example.voteTopic.model.Topic;
 import com.example.voteTopic.model.VoteSession;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TopicDTO {
     private long id;
     private String topicDescription;
+
+    @JsonIgnore
     private VoteSession voteSession;
 
     public long getId() {
