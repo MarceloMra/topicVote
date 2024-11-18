@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Service
 public class VoteSessionService {
@@ -58,20 +59,20 @@ public class VoteSessionService {
             throw new InvalidEndVoteDateTime();
         }
 
-        configureTimerToNotify(now, endVoteDateTime);
+        configureTimerToNotify(now, voteSessionDTO.getEndVoteDateTime());
     }
 
     private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime) {
         Duration waitTime = Duration.between(now, endVoteDateTime);
-
-        try {
-            new Thread(() -> {
+        TimerTask task = new TimerTask() {
+            public void run() {
                 //TODO count votes
                 rabbitMQProducer.sendMessage("Votes: 1");
-            }).wait(waitTime.toMillis());
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage());
-        }
+            }
+        };
+        Timer timer = new Timer("Timer");
+
+        timer.schedule(task, waitTime.toMillis());
     }
 
     private boolean hasValidTopicId(VoteSessionDTO voteSessionDTO){
