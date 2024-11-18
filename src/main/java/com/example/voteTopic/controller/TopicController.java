@@ -40,9 +40,9 @@ public class TopicController {
         try {
             voteSessionService.openVoteSession(voteSessionDTO);
         } catch (InvalidTopicException e) {
-            return new ResponseEntity<>(voteSessionDTO, HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         } catch (InvalidEndVoteDateTimeException e) {
-            return new ResponseEntity<>(voteSessionDTO, HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         }
 
         return new ResponseEntity<>(voteSessionDTO, HttpStatus.OK);

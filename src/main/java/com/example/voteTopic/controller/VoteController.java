@@ -26,9 +26,9 @@ public class VoteController {
         try {
             voteService.createVote(voteDTO);
         } catch (ClosedVoteSessionException e) {
-            return new ResponseEntity<>(voteDTO, HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         } catch (VoteSessionNotPresentException e) {
-            return new ResponseEntity<>(voteDTO, HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.PRECONDITION_FAILED);
         }
         return new ResponseEntity<>(voteDTO, HttpStatus.OK);
     }
