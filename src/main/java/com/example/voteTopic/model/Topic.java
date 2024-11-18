@@ -13,8 +13,8 @@ public class Topic {
     @Column(name = "topic_description", nullable = false)
     private String topicDescription;
 
-    @OneToOne(mappedBy = "topic")
-    //@JoinColumn(name = "tb_vote_session_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "topic", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private VoteSession voteSession;
 
     public long getId() {

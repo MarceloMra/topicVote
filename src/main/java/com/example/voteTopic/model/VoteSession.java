@@ -19,8 +19,9 @@ public class VoteSession {
     @Column(name = "end_vote_date_time", nullable = false)
     private LocalDateTime endVoteDateTime;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "topic_id", referencedColumnName = "id")
+    @OneToOne
+    @JoinColumn(name = "topic_id")
+    @MapsId
     private Topic topic;
 
     @OneToMany(mappedBy="voteSession")
