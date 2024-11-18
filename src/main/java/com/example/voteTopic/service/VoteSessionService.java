@@ -73,11 +73,17 @@ public class VoteSessionService {
         TimerTask task = new TimerTask() {
             public void run() {
                 int votesCount = 0;
-                Optional<VoteSession> voteSessionSearch = voteSessionRepository.findById(voteSession.getId());
 
-                if(voteSessionSearch.isPresent()){
-                    votesCount = voteSessionSearch.get().getVotes().size();
+                try {
+                    Optional<VoteSession> voteSessionSearch = voteSessionRepository.findById(voteSession.getId());
+
+                    if(voteSessionSearch.isPresent()){
+                        votesCount = voteSessionSearch.get().getVotes().size();
+                    }
+                }catch (Exception e){
+                    logger.error(e.getMessage());
                 }
+
 
                 rabbitMQProducer.sendMessage("Votes: "+votesCount);
             }
