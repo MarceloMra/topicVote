@@ -1,5 +1,6 @@
 package com.example.voteTopic.model;
 
+import com.example.voteTopic.dto.AssociateDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,16 +12,16 @@ public class Associate {
     private long id;
 
     @Column(nullable = false)
-    private long cpf;
+    private String cpf;
 
     @Column(nullable = false)
     private String name;
 
-    public long getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
-    public void setCpf(long cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
@@ -34,5 +35,19 @@ public class Associate {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public static AssociateDTO toDTO(Associate associate){
+        AssociateDTO associateDTO = new AssociateDTO();
+
+        associateDTO.setId(associate.getId());
+        associateDTO.setCpf(associate.getCpf());
+        associateDTO.setName(associate.getName());
+
+        return associateDTO;
     }
 }
