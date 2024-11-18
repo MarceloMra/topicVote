@@ -1,5 +1,6 @@
 package com.example.voteTopic.model;
 
+import com.example.voteTopic.dto.VoteDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -60,5 +61,16 @@ public class Vote {
 
     public void setVoteSession(VoteSession voteSession) {
         this.voteSession = voteSession;
+    }
+
+    public static VoteDTO toDTO(Vote vote){
+        VoteDTO voteDTO = new VoteDTO();
+
+        voteDTO.setVote(vote.isVote());
+        voteDTO.setVoteDate(vote.getVoteDate());
+        voteDTO.setVoteSession(vote.getVoteSession());
+        voteDTO.setAssociate(vote.getAssociate());
+
+        return voteDTO;
     }
 }
