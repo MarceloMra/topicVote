@@ -16,11 +16,11 @@ public class Vote {
     @Column(nullable = false)
     private boolean vote;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="tb_vote_session_id", nullable=false)
     private VoteSession voteSession;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="tb_associate_id", nullable=false)
     private Associate associate;
 

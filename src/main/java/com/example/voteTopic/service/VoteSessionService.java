@@ -5,6 +5,7 @@ import com.example.voteTopic.exception.InvalidEndVoteDateTime;
 import com.example.voteTopic.exception.InvalidTopicException;
 import com.example.voteTopic.model.VoteSession;
 import com.example.voteTopic.repository.VoteSessionRepository;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +35,20 @@ public class VoteSessionService {
     public void openVoteSession(VoteSessionDTO voteSessionDTO) throws InvalidTopicException, InvalidEndVoteDateTime {
         if(hasValidTopicId(voteSessionDTO)){
 
-            VoteSession voteSession = VoteSessionDTO.toEntity(voteSessionDTO);
+            initializeVoteSessionDate(voteSessionDTO);
 
-            initializeVoteSessionDate(voteSessionDTO, voteSession);
+            VoteSession voteSession = VoteSessionDTO.toEntity(voteSessionDTO);
 
             voteSession.setTopic(topicService.findTopicById(voteSessionDTO.getTopic().getId()).get());
             voteSessionRepository.save(voteSession);
 
+            configureTimerToNotify(voteSessionDTO.getStartVoteDateTime(), voteSessionDTO.getEndVoteDateTime(), voteSession);
         } else {
             throw new InvalidTopicException();
         }
     }
 
-    private void initializeVoteSessionDate(VoteSessionDTO voteSessionDTO, VoteSession voteSession) throws InvalidEndVoteDateTime {
+    private void initializeVoteSessionDate(VoteSessionDTO voteSessionDTO) throws InvalidEndVoteDateTime {
         LocalDateTime now = LocalDateTime.now();
 
         voteSessionDTO.setStartVoteDateTime(now);
@@ -60,7 +62,6 @@ public class VoteSessionService {
             throw new InvalidEndVoteDateTime();
         }
 
-        configureTimerToNotify(now, voteSessionDTO.getEndVoteDateTime(), voteSession);
     }
 
     private void configureTimerToNotify(LocalDateTime now, LocalDateTime endVoteDateTime, final VoteSession voteSession) {
