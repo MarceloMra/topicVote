@@ -30,6 +30,9 @@ public class VoteService {
     public void createVote(VoteDTO voteDTO) throws ClosedVoteSessionException, VoteSessionNotPresentException, InvalidAssociateException {
         voteDTO.setVoteDate(LocalDateTime.now());
 
+        if(voteDTO.getVoteSession() == null)
+            throw new VoteSessionNotPresentException();
+
         Optional<VoteSession> voteSessionOptional = voteSessionService.findById(voteDTO.getVoteSession().getId());
 
         if(voteSessionOptional.isPresent()){
@@ -38,6 +41,10 @@ public class VoteService {
             if(voteSession.getEndVoteDateTime().isAfter(LocalDateTime.now())){
 
                 Vote vote = VoteDTO.toEntity(voteDTO);
+
+                if(voteDTO.getAssociate() == null)
+                    throw new InvalidAssociateException();
+
                 Optional<Associate> associateOptional = associateSevice.findById(voteDTO.getAssociate().getId());
 
                 if(associateOptional.isPresent()){
